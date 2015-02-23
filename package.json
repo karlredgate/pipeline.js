@@ -1,0 +1,24 @@
+{
+  "name": "pipeline",
+  "description": "manage pipeline of child_process spawn calls",
+  "version": "0.0.1",
+  "main": "index.js",
+  "browser": "index.js",
+  "dependencies": { },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "Karl Redgate <karl.redgate@gmail.com> (http://karlredgate.github.io/)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/karlredgate/pipeline.js"
+  },
+  "bugs": {
+    "url": "https://github.com/karlredgate/pipeline.js/issues"
+  },
+  "homepage": "https://github.com/karlredgate/pipeline.js
+  "keywords": [
+    "metadata",
+    "packages"
+  ]
+}
