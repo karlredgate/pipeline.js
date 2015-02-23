@@ -50,8 +50,8 @@
  * }
  * var create_pipeline = require('pipeline').create_pipeline;
  * var commands = [
- *     [ 'cat', ['/var/db/carbonite/conductor/customer/foo.rdf'] ],
- *     [ 'xsltproc', ['/usr/share/carbonite/xslt/example.xslt', '-'] ]
+ *     [ 'cat', ['foo.rdf'] ],
+ *     [ 'xsltproc', ['example.xslt', '-'] ]
  * ];
  * var foo = create_pipeline( commands );
  * foo.on('data', save_data );
