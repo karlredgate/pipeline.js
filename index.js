@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-/** * Pipeline module
+/** Pipeline module
  * Run the set of commands and send the output and errors to the
  * event callbacks.
  *
@@ -62,11 +62,12 @@
 module.exports = Pipeline;
 
 var util = require('util');
-var stream = require('stream');
 var EventEmitter = require('events').EventEmitter;
+var Stream = require('stream').Stream;
+var Writable = Stream.Writable;
 var spawn  = require('child_process').spawn;
 
-util.inherits( Pipeline, EventEmitter );
+util.inherits( Pipeline, Writable );
 
 function throw_error_unless_valid( commands ) {
     var type_error = new TypeError( 'commands arg must be an array of command specs' );
@@ -81,7 +82,8 @@ function throw_error_unless_valid( commands ) {
  * The initial consumer is a Writable stream that looks like stdin of a process.
  */
 function Pipeline(commands) {
-    EventEmitter.call( this );
+    var options = {}; // options = options || {};
+    Writable.call( this, options );
 
     throw_error_unless_valid( commands );
 
@@ -107,6 +109,14 @@ function Pipeline(commands) {
         }
         return this.reduce( is_running, false );
     }
+}
+
+Pipeline.prototype._write = function (chunk, encoding, callback) {
+    this.stdin.write( chunk, encoding, callback );
+}
+
+Pipeline.prototype.end = function (chunk, encoding, callback) {
+    this.stdin.end( chunk, encoding, callback );
 }
 
 Pipeline.prototype.spawn = function () {
@@ -136,7 +146,7 @@ Pipeline.prototype.spawn = function () {
         merge.emit( 'child-death' );
     }
 
-    var error = new stream.Writable();
+    var error = new Writable();
     error._write = function ( chunk, encoding, callback ) {
         pipeline.emit( 'error-data', chunk, encoding );
         callback( null );
@@ -147,7 +157,7 @@ Pipeline.prototype.spawn = function () {
      * The stdin member of a process is a "Writable stream" object.
      * The callback is ---
      */
-    var next = new stream.Writable();
+    var next = new Writable();
     next._write = function ( chunk, encoding, callback ) {
         pipeline.emit( 'data', chunk, encoding );
         callback( null );
@@ -189,6 +199,7 @@ Pipeline.prototype.spawn = function () {
      * pipeline processes in the correct order.
      */
     this.commands.reverse().map( start_process );
+    this.stdin = next;
 }
 
 module.exports.create_pipeline = function (commands) {
